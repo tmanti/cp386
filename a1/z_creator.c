@@ -8,9 +8,9 @@ int main(int argc, char* args[]){
     pid_t child_pid = fork();
   
     // Parent process 
-    if (child_pid > 0)
+    if (child_pid > 0){
         sleep(sleep_timer);
-  
+    }
     // Child process
     else
         exit(0);
