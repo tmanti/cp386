@@ -15,6 +15,10 @@ const int SIZE = 4096;
 const int COMMAND_LINES = 5;
 const int MAX_COMMAND_SIZE = 50;
 
+#define BUFFER_SIZE 50
+#define READ_END 0
+#define WRITE_END 1
+
 const char *commands = "sample_in_process.txt";
 
 void writeOutput(char *command, char *output){
@@ -23,6 +27,15 @@ void writeOutput(char *command, char *output){
     fprintf(fp, "The output of: %s : is\n", command);
 	fprintf(fp, ">>>>>>>>>>>>>>>\n%s<<<<<<<<<<<<<<<\n", output);
     fclose(fp);
+}
+
+void command_run(char* command, int[] pipe){
+    close(pipe[READ_END]);
+    dup2(pipe[WRITE_END], 1);
+    dup2(pipe[WRITE_END], 2);
+    close(pipe[WRITE_END]);
+    char *argv[] = {"/bin/sh", "-c", command, NULL};
+    execvp(argv[0], argv);
 }
 
 void command_read(){
@@ -58,15 +71,20 @@ void command_read(){
 int main(int argc, char* args[]){
     int shm_fd = shm_open(name, O_CREAT | O_RDONLY, 0666); //filedescriptor creation
     if(shm_fd == -1){
-        printf("Shared memory failed!");
+        perror("shm_open");
         exit(1);
     }
 
-    ftruncate(shm_fd, SIZE); // truncate to size of shared mem segment
+    //printf("a: %d", shm_fd);
 
-    char *shm_base = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0); //base address from mmap()
+    if(ftruncate(shm_fd, SIZE)==-1){
+        perror("error on ftruncate");
+        exit(1);
+    } // truncate to size of shared mem segment
+
+    void *shm_base = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0); //base address from mmap()
     if(shm_base == MAP_FAILED){
-        printf("Map failed!");
+        printf("Map failed!\n");
         exit(1);
     }
 
@@ -91,5 +109,28 @@ int main(int argc, char* args[]){
         }
     } else {
         printf("malloc error");
+    }
+    pid_t command_pids[TA_count];    
+    for(int i = 0; i < COMMAND_LINES; i++){
+        int fd[2];
+        if(pipe(fd)==-1){
+            printf("Pipe failed!");
+            exit(1);
+        }
+        if((command_pids[i] = fork()) == -1)
+            return;//error
+
+        if(command_pids[i] == 0){
+            command_run(commands[i], fd);
+            break;
+        }
+        wait(NULL);
+
+        close(fd[WRITE_END]);
+        char buffer[1024];
+        read(fd[READ_END], buffer, 1024);
+        close(fd[READ_END]);
+
+        writeOutput(commands[i], buffer);
     }
 }
