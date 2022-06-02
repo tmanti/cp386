@@ -1,0 +1,36 @@
+The output of: uname -a : is
+>>>>>>>>>>>>>>>
+Linux DESKTOP-6IFLUCP 5.10.16.3-microsoft-standard-WSL2 #1 SMP Fri Apr 2 22:23:49 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+<<<<<<<<<<<<<<<
+The output of: free -m : is
+>>>>>>>>>>>>>>>
+              total        used        free      shared  buff/cache   available
+Mem:          12721         102       12531           0          87       12427
+Swap:          4096           0        4096
+<<<<<<<<<<<<<<<
+The output of: ls -l -a -F : is
+>>>>>>>>>>>>>>>
+total 88
+drwxrwxrwx 1 tmanti tmanti  4096 Jun  1 20:57 ./
+drwxrwxrwx 1 tmanti tmanti  4096 May 26 23:34 ../
+-rwxrwxrwx 1 tmanti tmanti 21224 May 26 21:57 assignment_average*
+-rwxrwxrwx 1 tmanti tmanti  1580 May 26 21:57 assignment_average.c*
+-rwxrwxrwx 1 tmanti tmanti   880 May 12 20:43 makefile*
+-rwxrwxrwx 1 tmanti tmanti   447 Jun  1 20:57 output.txt*
+-rwxrwxrwx 1 tmanti tmanti 17936 Jun  1 20:57 process_management*
+-rwxrwxrwx 1 tmanti tmanti  3474 Jun  1 20:57 process_management.c*
+-rwxrwxrwx 1 tmanti tmanti   184 May 26 21:06 sample_in_grades.txt*
+-rwxrwxrwx 1 tmanti tmanti    39 May 26 22:17 sample_in_process.txt*
+-rwxrwxrwx 1 tmanti tmanti 17648 Jun  1 20:48 test*
+-rwxrwxrwx 1 tmanti tmanti  2564 Jun  1 20:48 test.c*
+-rwxrwxrwx 1 tmanti tmanti   322 May 12 20:32 z_creator.c*
+-rwxrwxrwx 1 tmanti tmanti  1065 May 12 21:58 z_terminator.c*
+<<<<<<<<<<<<<<<
+The output of: whoami : is
+>>>>>>>>>>>>>>>
+tmanti
+<<<<<<<<<<<<<<<
+The output of: pwd : is
+>>>>>>>>>>>>>>>
+/mnt/d/dev/school/cp386/a1
+<<<<<<<<<<<<<<<

@@ -19,7 +19,7 @@ const int MAX_COMMAND_SIZE = 50;
 #define READ_END 0
 #define WRITE_END 1
 
-const char *commands = "sample_in_process.txt";
+const char *command_file = "sample_in_process.txt";
 
 void writeOutput(char *command, char *output){
     FILE *fp;
@@ -29,7 +29,7 @@ void writeOutput(char *command, char *output){
     fclose(fp);
 }
 
-void command_run(char* command, int[] pipe){
+void command_run(char* command, int pipe[]){
     close(pipe[READ_END]);
     dup2(pipe[WRITE_END], 1);
     dup2(pipe[WRITE_END], 2);
@@ -57,7 +57,7 @@ void command_read(){
     char *ptr = shm_base;
 
     FILE *fp;
-    fp = fopen("sample_in_process.txt", "r");
+    fp = fopen(command_file, "r");
     //printf("hello from child\n");
     char *line = NULL;
     size_t len = 0;
@@ -75,12 +75,9 @@ int main(int argc, char* args[]){
         exit(1);
     }
 
-    //printf("a: %d", shm_fd);
+    //printf("%d\n", shm_fd);
 
-    if(ftruncate(shm_fd, SIZE)==-1){
-        perror("error on ftruncate");
-        exit(1);
-    } // truncate to size of shared mem segment
+    ftruncate(shm_fd, SIZE); // truncate to size of shared mem segment
 
     void *shm_base = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0); //base address from mmap()
     if(shm_base == MAP_FAILED){
@@ -110,7 +107,7 @@ int main(int argc, char* args[]){
     } else {
         printf("malloc error");
     }
-    pid_t command_pids[TA_count];    
+    pid_t command_pids[COMMAND_LINES];    
     for(int i = 0; i < COMMAND_LINES; i++){
         int fd[2];
         if(pipe(fd)==-1){
@@ -118,7 +115,7 @@ int main(int argc, char* args[]){
             exit(1);
         }
         if((command_pids[i] = fork()) == -1)
-            return;//error
+            return 1;//error
 
         if(command_pids[i] == 0){
             command_run(commands[i], fd);
@@ -127,7 +124,7 @@ int main(int argc, char* args[]){
         wait(NULL);
 
         close(fd[WRITE_END]);
-        char buffer[1024];
+        char buffer[1024] = {0};
         read(fd[READ_END], buffer, 1024);
         close(fd[READ_END]);
 
