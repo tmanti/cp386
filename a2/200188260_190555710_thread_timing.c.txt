@@ -53,7 +53,8 @@ int main(int argc, char *argv[])
 			if((*threads+i)->start == getCurrentTime() && !(*threads+i)->ran){
 				Thread *t = (*threads+i);
 				//printf("starting: %s", t.tid);
-				rununtil = t->start + rununtil;
+				int temp = t->start + rununtil;
+				rununtil = (temp > rununtil)?temp:rununtil;
 				//start the thread
 				int err = pthread_create(&thread[i], NULL, threadRun, t);
 				if(!err){
