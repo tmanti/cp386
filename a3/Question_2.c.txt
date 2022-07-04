@@ -1,0 +1,39 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<pthread.h>
+
+int a = 5;
+int b = 7;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void* change(void *arg) {
+    pthread_mutex_lock(&mutex);
+    printf("Read value of 'a' global variable is: %d\n", a);
+    printf("Read value of 'b' global variable is: %d\n", b);
+    sleep(1);
+	a = a + 1;
+	b = b - 1;
+    printf("Updated value of 'a' variable is: %d\n", a);
+    printf("Updated value of 'b' variable is: %d\n", b);
+    pthread_mutex_unlock(&mutex);
+    return NULL;
+
+}
+
+
+int main(int argc, char *arge[]) {
+    pthread_t tid[3];
+
+    for(int i = 0; i < 3; i++) {
+
+        //run thread
+        pthread_create(&tid[i], NULL, &change, NULL);
+    }
+
+    for(int i = 0; i < 3; i++) {
+            pthread_join(tid[i], NULL);
+    }
+
+    return 0;
+}
